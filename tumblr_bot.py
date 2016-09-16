@@ -15,38 +15,47 @@ import random
 
 if __name__ == "__main__":
 
+	# Grab random words from a selected text to use as tags
 	text = " ".join(open(sys.argv[1], 'r').readlines())
 	words = re.split("\s", text)
-	#prohibited = ['the', 'MarieFrances', 'mike', 'tablishment']
 	regex = re.compile('[^a-zA-Z]')
 
 	wset = set()
 	for w in words:
 		w = regex.sub('', w)
-		if len(w) > 2 and w not in prohibited:
+		if len(w) > 2:
 			wset.add(w)
 	
 
-
-
+	# tumblr authentication details
+	# details about setting up tokens available from tumblr:
+	# https://www.tumblr.com/docs/en/api/v2
 	REQUEST_TOKEN_URL = 'http://www.tumblr.com/oauth/request_token'
 	AUTHORIZATION_URL = 'http://www.tumblr.com/oauth/authorize'
 	ACCESS_TOKEN_URL = 'http://www.tumblr.com/oauth/access_token'
-	CONSUMER_KEY = 'hdXV9JhkLN1tdVivsDFxWozKic48SeKuyZDHQpeGWxN74p0yJV'
-	CONSUMER_SECRET = 'C9iaQjBIasc7HWV2TOXTRpb5sgTkgrhJapifLmxugwzFnOugHS'
+	CONSUMER_KEY = sys.argv[2]
+	CONSUMER_SECRET = sys.argv[3]
 
 	client = pytumblr.TumblrRestClient(
 	    CONSUMER_KEY,
 	    CONSUMER_SECRET,
-	    "2ySYcIiNvJ8jgYvYiJ7ZSJ17ZekpqZOjqi7xxoRTDaH21RxUmV",
-	    "Ehh8UDqzbNb9XK0FBDsPqvWUu4UBF9mRpFbCcAFyDWcpHroL3y"
+	    sys.argv[4],
+	    sys.argv[5]
 	)	
 
 	def make_and_post():
-		rtags = random.sample(wset, 3)
-		subprocess.call(["Rscript",  "random_plot.R"])
-		client.create_photo('marlykrushkova', state="published", tags=rtags, data="/home/ubuntu/tbot/random_plot.png")
 
+		# set the tags
+		rtags = random.sample(wset, 3)
+	
+		# run the R script to make some blobs
+		subprocess.call(["Rscript",  "random_plot.R"])
+
+		# post
+		client.create_photo('myBot', state="published", tags=rtags, data="/home/ubuntu/tbot/random_plot.png")
+
+
+	# Run forever, posting every day and a half or so
 	s = 60 * 60 * 48
 	noise = random.randint(-18,18) * 60 * 60
 
