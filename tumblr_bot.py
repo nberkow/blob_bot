@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
 	text = " ".join(open(sys.argv[1], 'r').readlines())
 	words = re.split("\s", text)
-	prohibited = ['the', 'MarieFrances', 'mike', 'tablishment']
+	#prohibited = ['the', 'MarieFrances', 'mike', 'tablishment']
 	regex = re.compile('[^a-zA-Z]')
 
 	wset = set()
